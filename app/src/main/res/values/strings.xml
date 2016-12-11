@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">TumblrViewer</string>
+    <string name="home_tumblr_search_hint">User search</string>
+
+    <string name="toolbar_title">Tumblr Viewer app</string>
+
+    <string name="toast_no_connection">Network unavailable. Please turn on internet</string>
+    <string name="toast_no_user">There is no such a user</string>
+    <string name="toast_error">Error, try again</string>
+</resources>

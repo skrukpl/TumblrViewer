@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <AutoCompleteTextView
+        android:id="@+id/tumbler_profile"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/button_blue_white_radius"
+        android:textColor="@color/blueDarker"
+        android:textCursorDrawable="@drawable/cursor_dark"
+        android:layout_marginTop="@dimen/_7sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_marginRight="@dimen/_5sdp"
+        android:layout_marginLeft="@dimen/_5sdp"
+        android:padding="@dimen/_3sdp"
+        android:hint="@string/home_tumblr_search_hint"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:layout_toLeftOf="@+id/search_iv"
+        android:singleLine="true"
+        android:textColorHint="@color/blueDarker" />
+    <ImageView
+        android:id="@+id/search_iv"
+        android:layout_width="@dimen/_25sdp"
+        android:layout_height="@dimen/_25sdp"
+        android:layout_alignParentRight="true"
+        android:layout_marginTop="@dimen/_5sdp"
+        android:layout_marginBottom="@dimen/_5sdp"
+        android:layout_marginRight="@dimen/_5sdp"
+        android:src="@drawable/search"/>
+
+    <com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout
+        android:id="@+id/swipy_refresh_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tumbler_profile">
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/feed_rv"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            />
+    </com.orangegangsters.github.swipyrefreshlayout.library.SwipyRefreshLayout>
+
+</RelativeLayout>

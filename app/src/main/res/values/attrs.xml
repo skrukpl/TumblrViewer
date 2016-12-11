@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="CustomFontText">
+        <attr name="customFont" format="string"/>
+    </declare-styleable>
+    <declare-styleable name="TumblrEditText">
+        <attr name="show_tint" format="string" />
+        <attr name="def_color" format="string" />
+        <attr name="def_cursor" format="string" />
+    </declare-styleable>
+
+</resources>
