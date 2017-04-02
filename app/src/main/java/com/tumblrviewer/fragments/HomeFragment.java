@@ -45,8 +45,7 @@ import butterknife.OnClick;
 
 public class HomeFragment extends Fragment implements IHomeFragment, ProgressBarInterface {
     private MainActivity mActivity;
-    private static HomeFragment sInstance;
-    private static HomePresenter sHomePresenter;
+    private HomePresenter mHomePresenter;
     @BindView(R.id.tumbler_profile)
     AutoCompleteTextView mTumblerProfileAc;
     @BindView(R.id.search_iv)
@@ -61,9 +60,8 @@ public class HomeFragment extends Fragment implements IHomeFragment, ProgressBar
     EventBus eventBus = EventBus.getDefault();
 
     public static HomeFragment getInstance() {
-        if (sInstance == null)
-            sInstance = new HomeFragment();
-        return sInstance;
+           HomeFragment mFragmentInstance = new HomeFragment();
+        return mFragmentInstance;
     }
 
     @Nullable
@@ -73,7 +71,7 @@ public class HomeFragment extends Fragment implements IHomeFragment, ProgressBar
         ButterKnife.bind(this, view);
         mActivity = (MainActivity) getActivity();
 
-        sHomePresenter = new HomePresenter();
+        mHomePresenter = new HomePresenter();
         mUserFeedHomeAdapter = null;
 
         prepareFeedRv();
@@ -180,7 +178,7 @@ public class HomeFragment extends Fragment implements IHomeFragment, ProgressBar
 
 
     private HomePresenter getPresenter() {
-        return sHomePresenter;
+        return mHomePresenter;
     }
 
     @Override

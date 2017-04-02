@@ -51,8 +51,6 @@ public class ProfilesDbModel extends RealmObject{
             ProfilesDbModel profilesDbModel = new ProfilesDbModel(profile);
             realm.beginTransaction();
             realm.copyToRealm(profilesDbModel);
-//            ProfilesDbModel profilesDbModel = realm.createObject(ProfilesDbModel.class);
-//            profilesDbModel.setProfile(profile);
             realm.commitTransaction();
         }
     }

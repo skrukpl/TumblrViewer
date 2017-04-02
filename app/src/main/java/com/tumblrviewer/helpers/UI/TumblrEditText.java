@@ -52,20 +52,6 @@ public class TumblrEditText extends EditText {
                 Typeface defTypeface = CustomFonts.SanFranciscoDisplay.asTypeface(context);
                 setTypeface(defTypeface);
             }
-
-            str = a.getString(R.styleable.TumblrEditText_def_cursor);
-
-            try {
-                Field f = TextView.class.getDeclaredField("mCursorDrawableRes");
-                f.setAccessible(true);
-                if (str == null) {
-                    f.set(this, R.drawable.cursor);
-                } else {
-                    f.set(this, R.drawable.cursor_dark);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
     }
 

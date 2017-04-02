@@ -17,29 +17,42 @@ public class ApiManager {
     private Retrofit mRetrofit;
     HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
     OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+    private static ApiManager INSTANCE;
+    private ApiCalls apiCalls;
 
-    public Retrofit getRetrofit() {
-        if (mRetrofit == null) {
-            if (BuildConfig.REPORTLOGS) {
-                logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-                OkLogInterceptor interceptor = OkLogInterceptor.builder()
-                        .build();
+    private ApiManager() {
+        if (BuildConfig.REPORTLOGS) {
+            logging.setLevel(HttpLoggingInterceptor.Level.BODY);
+            OkLogInterceptor interceptor = OkLogInterceptor.builder()
+                    .build();
 
-                httpClient.addInterceptor(interceptor);
-                httpClient.addNetworkInterceptor(logging);
+            httpClient.addInterceptor(interceptor);
+            httpClient.addNetworkInterceptor(logging);
 
-                mRetrofit = new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .client(httpClient.build())
-                        .build();
-            } else {
-                mRetrofit = new Retrofit.Builder()
-                        .baseUrl(API_BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
-            }
+            mRetrofit = new Retrofit.Builder()
+                    .baseUrl(API_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .client(httpClient.build())
+                    .build();
+        } else {
+            mRetrofit = new Retrofit.Builder()
+                    .baseUrl(API_BASE_URL)
+                    .addConverterFactory(GsonConverterFactory.create())
+                    .build();
         }
-        return mRetrofit;
+
+        apiCalls = mRetrofit.create(ApiCalls.class);
+    }
+
+    public static void initApiManager() {
+        INSTANCE = new ApiManager();
+    }
+
+    public static ApiManager getApiManager() {
+        return INSTANCE;
+    }
+
+    public ApiCalls getApi() {
+        return apiCalls;
     }
 }

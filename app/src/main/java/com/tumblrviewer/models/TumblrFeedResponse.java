@@ -82,11 +82,21 @@ public class TumblrFeedResponse {
         public String mPhotoUrl_100;
         @SerializedName("photo-url-75")
         public String mPhotoUrl_75;
+        @SerializedName("regular-body")
+        public String mRegularBody;
 
         @SerializedName("quote-text")
         public String mQuote;
 
         @SerializedName("tags")
         public List<String> mTags;
+
+        @Override
+        public String toString() {
+            return "Posts{" +
+                    "mId='" + mId + '\'' +
+                    ", mType='" + mType + '\'' +
+                    '}';
+        }
     }
 }

@@ -2,6 +2,7 @@ package com.tumblrviewer.adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,67 +28,184 @@ import butterknife.OnClick;
  * Created by sebastian on 10.12.2016.
  */
 
-public class UserFeedHomeAdapter extends RecyclerView.Adapter<UserFeedHomeAdapter.ViewHolder> {
+public class UserFeedHomeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     Context context;
     List<TumblrFeedResponse.Posts> postsList = new ArrayList<>();
 
+    public class ViewHolderQuote extends RecyclerView.ViewHolder {
+        @BindView(R.id.feed_date_tv)
+        TumblrTextView mFeedDateTv;
+        @BindView(R.id.feed_quote_tv)
+        TumblrTextView mFeedQuoteTv;
+        @BindView(R.id.feed_tags_tv)
+        TumblrTextView mFeedTagsTv;
+
+        ViewHolderQuote(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
+    public class ViewHolderPhoto extends RecyclerView.ViewHolder {
+        @BindView(R.id.feed_date_tv)
+        TumblrTextView mFeedDateTv;
+        @BindView(R.id.feed_photo_iv)
+        ImageView mFeedPhotoIv;
+        @BindView(R.id.feed_desc_tv)
+        TumblrTextView mFeedDescTv;
+        @BindView(R.id.feed_tags_tv)
+        TumblrTextView mFeedTagsTv;
+
+        ViewHolderPhoto(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+
+        @OnClick(R.id.feed_photo_iv)
+        public void onClick() {
+            int position = getAdapterPosition();
+            TumblrFeedResponse.Posts post = postsList.get(position);
+            EventBus.getDefault().post(new UserFeedPostEvent(post.mPhotoUrl_1280, UserFeedPostEvent.UserFeedTypesPostEvent.FEED_PHOTO));
+        }
+    }
+
+    public class ViewHolderRegular extends RecyclerView.ViewHolder {
+        @BindView(R.id.feed_date_tv)
+        TumblrTextView mFeedDateTv;
+        @BindView(R.id.feed_regular_tv)
+        TumblrTextView mFeedRegularTv;
+        @BindView(R.id.feed_tags_tv)
+        TumblrTextView mFeedTagsTv;
+
+        ViewHolderRegular(View view) {
+            super(view);
+            ButterKnife.bind(this, view);
+        }
+    }
+
     public UserFeedHomeAdapter(Context context, List<TumblrFeedResponse.Posts> postsList) {
         this.context = context;
-        this.postsList = postsList;
+
+        this.postsList = removeUnsuportedTypes(postsList);
+    }
+
+    private List<TumblrFeedResponse.Posts> removeUnsuportedTypes(List<TumblrFeedResponse.Posts> posts){
+        for(int i=0; i<posts.size(); i++) {
+            TumblrFeedResponse.Posts p = posts.get(i);
+            if (p.mType.equals("quote") || p.mType.equals("photo") || p.mType.equals("regular"))
+                continue;
+
+            posts.remove(i);
+            i--;
+        }
+//        Timber.i("postslist-size: "+posts.size());
+//        for(int i=0; i<posts.size(); i++) {
+//            Timber.i(posts.get(i).toString());
+//        }
+
+        return posts;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View itemView = layoutInflater.inflate(R.layout.adapter_home_feed_item, parent, false);
-        ViewHolder viewHolder = new ViewHolder(itemView);
-        return viewHolder;
-    }
-
-    @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
-        TumblrFeedResponse.Posts post = postsList.get(position);
-        switch (post.mType) {
+    public int getItemViewType(int position) {
+        switch (postsList.get(position).mType) {
             case "quote":
-                holder.mFeedQuoteTv.setVisibility(View.VISIBLE);
-                holder.mFeedPhotoIv.setVisibility(View.GONE);
-                holder.mFeedDescTv.setVisibility(View.GONE);
-                holder.mFeedDateTv.setText(post.mDate);
-                holder.mFeedDescTv.setText(post.mSlug);
-
-
-                holder.mFeedQuoteTv.setText(post.mQuote);
-                break;
+                return 1;
             case "photo":
-                holder.mFeedDescTv.setVisibility(View.VISIBLE);
-                holder.mFeedPhotoIv.setVisibility(View.VISIBLE);
-                holder.mFeedQuoteTv.setVisibility(View.GONE);
-                holder.mFeedDateTv.setText(post.mDate);
-                holder.mFeedDescTv.setText(post.mSlug);
+                return 2;
+            case "regular":
+                return 3;
+        }
+        return -1;
+    }
+
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
+        switch (viewType) {
+            case 1:
+                return new ViewHolderQuote(layoutInflater.inflate(R.layout.adapter_home_feed_quote, parent, false));
+            case 2:
+                return new ViewHolderPhoto(layoutInflater.inflate(R.layout.adapter_home_feed_photo, parent, false));
+            case 3:
+                return new ViewHolderRegular(layoutInflater.inflate(R.layout.adapter_home_feed_regular, parent, false));
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        TumblrFeedResponse.Posts post = postsList.get(position);
+        switch (holder.getItemViewType()) {
+            case 1:
+                ViewHolderQuote viewHolderQuote = (ViewHolderQuote) holder;
+                viewHolderQuote.mFeedDateTv.setText(post.mDate);
+                viewHolderQuote.mFeedQuoteTv.setText(post.mQuote);
+                break;
+            case 2:
+                ViewHolderPhoto viewHolderPhoto = (ViewHolderPhoto) holder;
+                viewHolderPhoto.mFeedDateTv.setText(post.mDate);
+                viewHolderPhoto.mFeedDescTv.setText(post.mSlug);
                 if (post.mTags != null)
-                    for (int i = 0; i < post.mTags.size(); i++) {
-                        holder.mFeedTagsTv.setText("#" + post.mTags.get(i));
-                    }
+                    for (String tag : post.mTags)
+                        viewHolderPhoto.mFeedTagsTv.setText("#" + tag);
 
                 Glide.with(context)
                         .load(post.mPhotoUrl_500)
                         .placeholder(R.drawable.photo)
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        .into(holder.mFeedPhotoIv);
+                        .into(viewHolderPhoto.mFeedPhotoIv);
+                break;
+            case 3:
+                ViewHolderRegular viewHolderRegular = (ViewHolderRegular) holder;
+                viewHolderRegular.mFeedDateTv.setText(post.mDate);
+                viewHolderRegular.mFeedRegularTv.setText(Html.fromHtml(post.mRegularBody));
                 break;
         }
-        if (post.mSlug.equals(""))
-            holder.mFeedDescTv.setVisibility(View.GONE);
-        if (post.mTags != null) {
-            holder.mFeedTagsTv.setVisibility(View.VISIBLE);
-            StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < post.mTags.size(); i++) {
-                stringBuilder.append("#" + post.mTags.get(i));
-            }
-            holder.mFeedTagsTv.setText(stringBuilder.toString());
-        } else
-            holder.mFeedTagsTv.setVisibility(View.GONE);
     }
+
+//    @Override
+//    public void onBindViewHolder(ViewHolder holder, int position) {
+//        TumblrFeedResponse.Posts post = postsList.get(position);
+//        switch (post.mType) {
+//            case "quote":
+//                holder.mFeedQuoteTv.setVisibility(View.VISIBLE);
+//                holder.mFeedPhotoIv.setVisibility(View.GONE);
+//                holder.mFeedDescTv.setVisibility(View.GONE);
+//                holder.mFeedDateTv.setText(post.mDate);
+//                holder.mFeedDescTv.setText(post.mSlug);
+//                holder.mFeedQuoteTv.setText(post.mQuote);
+//                break;
+//            case "photo":
+//                holder.mFeedDescTv.setVisibility(View.VISIBLE);
+//                holder.mFeedPhotoIv.setVisibility(View.VISIBLE);
+//                holder.mFeedQuoteTv.setVisibility(View.GONE);
+//                holder.mFeedDateTv.setText(post.mDate);
+//                holder.mFeedDescTv.setText(post.mSlug);
+//                if (post.mTags != null)
+//                    for (int i = 0; i < post.mTags.size(); i++) {
+//                        holder.mFeedTagsTv.setText("#" + post.mTags.get(i));
+//                    }
+//
+//                Glide.with(context)
+//                        .load(post.mPhotoUrl_500)
+//                        .placeholder(R.drawable.photo)
+//                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                        .into(holder.mFeedPhotoIv);
+//                break;
+//        }
+//        if (post.mSlug.equals(""))
+//            holder.mFeedDescTv.setVisibility(View.GONE);
+//        if (post.mTags != null) {
+//            holder.mFeedTagsTv.setVisibility(View.VISIBLE);
+//            StringBuilder stringBuilder = new StringBuilder();
+//            for (int i = 0; i < post.mTags.size(); i++) {
+//                stringBuilder.append("#" + post.mTags.get(i));
+//            }
+//            holder.mFeedTagsTv.setText(stringBuilder.toString());
+//        } else
+//            holder.mFeedTagsTv.setVisibility(View.GONE);
+//    }
 
 
     public void clear() {
@@ -96,7 +214,21 @@ public class UserFeedHomeAdapter extends RecyclerView.Adapter<UserFeedHomeAdapte
     }
 
     public void addAll(List<TumblrFeedResponse.Posts> list) {
-        postsList.addAll(list);
+//        for(int i=0; i<list.size(); i++) {
+//            TumblrFeedResponse.Posts p = list.get(i);
+//            if (p.mType.equals("quote") || p.mType.equals("photo") || p.mType.equals("regular")) {
+//                Timber.i("Continue: "+p.mType.toString());
+//                continue;
+//            }else {
+//                postsList.remove(i);
+//                i--;
+//            }
+//        }
+//        Timber.i("postslist-size: "+postsList.size());
+//        for(int i=0; i<postsList.size(); i++) {
+//            Timber.i(postsList.get(i).toString());
+//        }
+        postsList.addAll(removeUnsuportedTypes(list));
         notifyDataSetChanged();
     }
 
@@ -109,29 +241,5 @@ public class UserFeedHomeAdapter extends RecyclerView.Adapter<UserFeedHomeAdapte
         return postsList.size();
     }
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.feed_date_tv)
-        TumblrTextView mFeedDateTv;
-        @BindView(R.id.feed_photo_iv)
-        ImageView mFeedPhotoIv;
-        @BindView(R.id.feed_desc_tv)
-        TumblrTextView mFeedDescTv;
-        @BindView(R.id.feed_tags_tv)
-        TumblrTextView mFeedTagsTv;
-        @BindView(R.id.feed_quote_tv)
-        TumblrTextView mFeedQuoteTv;
 
-
-        public ViewHolder(View itemView) {
-            super(itemView);
-            ButterKnife.bind(this, itemView);
-        }
-
-        @OnClick(R.id.feed_photo_iv)
-        public void onClick() {
-            int position = getAdapterPosition();
-            TumblrFeedResponse.Posts post = postsList.get(position);
-            EventBus.getDefault().post(new UserFeedPostEvent(post.mPhotoUrl_1280, UserFeedPostEvent.UserFeedTypesPostEvent.FEED_PHOTO));
-        }
-    }
 }

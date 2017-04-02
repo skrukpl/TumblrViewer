@@ -8,6 +8,8 @@ import com.tumblrviewer.models.ProfilesDbModel;
 import com.tumblrviewer.models.TumblrFeedResponse;
 import com.tumblrviewer.view.IHomeFragment;
 
+import timber.log.Timber;
+
 /**
  * Created by sebastian on 10.12.2016.
  */
@@ -33,6 +35,7 @@ public class HomePresenter implements HomeFragmentController.ResultCallback {
         prepareToPopulateAc();
         if(mStart == true){
             String profile = Utils.getFromPreferences("profile", mainActivity);
+            Timber.i("profile: "+profile);
             if(profile!=null)
                 getNewFeedList(mainActivity, profile);
             mStart = false;
@@ -55,7 +58,7 @@ public class HomePresenter implements HomeFragmentController.ResultCallback {
             mView.onShowProgressBar(true);
             mPostStart = 0;
             mPostTotal = 0;
-            mHomeFragmentController.getUserFeeds(mainActivity, user, mPostStart, this);
+            mHomeFragmentController.getUserFeeds(user, mPostStart, this);
         }else {
             mView.onFeedReceiveFail(mainActivity.getString(R.string.toast_no_connection));
         }
@@ -63,7 +66,7 @@ public class HomePresenter implements HomeFragmentController.ResultCallback {
     public void getFeedList(MainActivity mainActivity, String user){
         if(Utils.isNetworkAvailable(mainActivity)){
             mView.onShowProgressBar(true);
-            mHomeFragmentController.getUserFeeds(mainActivity, user, mPostStart, this);
+            mHomeFragmentController.getUserFeeds(user, mPostStart, this);
         }else {
             mView.onFeedReceiveFail(mainActivity.getString(R.string.toast_no_connection));
         }
@@ -91,6 +94,7 @@ public class HomePresenter implements HomeFragmentController.ResultCallback {
                 mView.onFeedReceiveFail(mainActivity.getString(R.string.toast_no_user));
                 break;
             case 0:
+                break;
             case -1:
                 mView.onFeedReceiveFail(mainActivity.getString(R.string.toast_error));
                 break;

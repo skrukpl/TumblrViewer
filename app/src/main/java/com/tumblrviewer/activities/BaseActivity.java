@@ -14,44 +14,22 @@ import android.view.View;
 import com.github.johnpersano.supertoasts.library.Style;
 import com.github.johnpersano.supertoasts.library.SuperActivityToast;
 import com.github.johnpersano.supertoasts.library.SuperToast;
-import com.prashantsolanki.secureprefmanager.SecurePrefManagerInit;
-import com.tumblrviewer.BuildConfig;
 import com.tumblrviewer.R;
-import com.tumblrviewer.api.ApiManager;
 import com.tumblrviewer.helpers.Utils;
-
-import io.realm.Realm;
-import io.realm.RealmConfiguration;
-import timber.log.Timber;
 
 
 /**
  * Created by sebastian on 10.12.2016.
  */
 public abstract class BaseActivity extends AppCompatActivity {
-    ApiManager apiManager;
     SuperToast toast = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        apiManager = new ApiManager();
 
-        Realm.init(this);
-        RealmConfiguration config = new RealmConfiguration.Builder().build();
-        Realm.setDefaultConfiguration(config);
-
-        new SecurePrefManagerInit.Initializer(getApplicationContext())
-                .useEncryption(true)
-                .initialize();
-
-        if (BuildConfig.REPORTLOGS)
-            Timber.plant(new Timber.DebugTree());
     }
 
-    public ApiManager getApiManager() {
-        return apiManager;
-    }
 
     public void pushFragments(String tag, Fragment fragment, int content,
                               boolean shouldAnimate, boolean backstack) {
@@ -68,10 +46,6 @@ public abstract class BaseActivity extends AppCompatActivity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
     }
 
     @Override
